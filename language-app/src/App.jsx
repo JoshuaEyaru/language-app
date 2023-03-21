@@ -1,12 +1,20 @@
 import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import './App.css'
+import index from 'an-array-of-english-words';
 
 function App() {
-  const [randomWord, setRandomWord] = useState('history');
+  const [randomWord, setRandomWord] = useState('');
   const [currentWord, setCurrentWord] = useState('');
   const [wordMeaning, setWordMeaning] = useState('')
   const [prevWord, setPrevWord] = useState([])
+  const [bannedWords, setBannedWords] = useState([])
+
+  const getRandomWord = () => {
+    const randomIndex = Math.floor(Math.random() * wordList.length);
+    const randomWord = wordList[randomIndex];
+    setRandomWord(randomWord);
+  }
 
   const getWord = () => {
     makeQuery();
@@ -25,27 +33,34 @@ function App() {
     if(json[0].word === randomWord){
       setWordMeaning(json[0].meanings)
     }
-    
   }
 
-  
+  const addToBannedWords = () => {
+    setBannedWords([...bannedWords, currentWord]);
+  }
+
+  const addToSeenWords = () => {
+    setPrevWord([...prevWord, currentWord]);
+  }
+
   return (
     <div className="App">
-      
       <div className='word-seen'>
         <h3>Words seen</h3>
-
-        <br></br>
-        <div className='seen-display'></div>
+        <br />
+        <div className="seen-display">
+          {prevWord.map((word, index) => (
+            <div key={index}>{word}</div>
+          ))}
+        </div>
       </div>
 
       <div className='word-new'>
         <h2>Improve Your English Vocabulary</h2>
         <h3>Discover English words and practice!</h3>
-        
-        <br></br>
-        <div className='display-word'>
-          <h3>{currentWord}</h3>
+        <br />
+        <div>
+          <h3 className="display-word" onClick={addToBannedWords}>{currentWord}</h3>
           {wordMeaning.length > 0 && (
             <ul>
               {wordMeaning.map(meaning => (
@@ -56,20 +71,20 @@ function App() {
               ))}
             </ul>
           )}
-
         </div>
-
-        <br></br>
-        <button onClick={getWord}>New Word</button>
+        <br />
+        <button onClick={() => {getWord(); addToSeenWords();}}>New Word</button>
       </div>
 
       <div className='word-banned'>
         <h3>Banned Words</h3>
-
-        <br></br>
-        <div className='banned-display'></div>
+        <br />
+        <div className="banned-display">
+          {bannedWords.map((word, index) => (
+            <div key={index}>{word}</div>
+          ))}
+        </div>
       </div>
-
     </div>
   )
 }
